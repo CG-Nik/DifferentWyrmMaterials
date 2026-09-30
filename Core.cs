@@ -46,11 +46,6 @@ namespace DifferentWyrmMaterials
 
         public static void AddToDistribution(Distribution distribution, UnityEngine.Object topic, float baseValue, float noAttributeValue, AttributeCurveRange[] multipliers)
         {
-            if (!NetworkSceneManager.IsServer)
-            {
-                return;
-            }
-
             IList items = (IList)distribution.GetType().GetField("items", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(distribution);
             Distribution.Item item = new Distribution.Item();
             typeof(Distribution.BaseItem).GetField("topic", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(item, topic);
@@ -69,11 +64,6 @@ namespace DifferentWyrmMaterials
 
         public override void OnLateInitializeMelon()
         {
-            if (!NetworkSceneManager.IsServer)
-            {
-                return;
-            }
-
             wyrmMaterialDistribution = GameObject.Instantiate(Distribution.All.Where(dist => dist.Hash == 49220u).First());
             typeof(HashedGeneralValue<Distribution>).GetField("hash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(wyrmMaterialDistribution, 49221);
             wyrmMaterialDistribution.name = "Wyrm Material Distribution";
