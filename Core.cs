@@ -6,6 +6,7 @@ using MelonLoader;
 using System.Collections;
 using System.Reflection;
 using UnityEngine;
+using CustomDistributionAPI;
 
 [assembly: MelonInfo(typeof(DifferentWyrmMaterials.Core), "DifferentWyrmMaterials", "1.0.0", "CGNik", null)]
 [assembly: MelonGame("Alta", "A Township Tale")]
@@ -39,27 +40,10 @@ namespace DifferentWyrmMaterials
     {
         public static Distribution wyrmMaterialDistribution;
         public static Distribution crystalWyrmMaterialDistribution;
+
         public override void OnInitializeMelon()
         {
             LoggerInstance.Msg("Initialized.");
-        }
-
-        public static void AddToDistribution(Distribution distribution, UnityEngine.Object topic, float baseValue, float noAttributeValue, AttributeCurveRange[] multipliers)
-        {
-            IList items = (IList)distribution.GetType().GetField("items", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(distribution);
-            Distribution.Item item = new Distribution.Item();
-            typeof(Distribution.BaseItem).GetField("topic", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(item, topic);
-            typeof(Distribution.BaseItem).GetField("baseValue", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(item, baseValue);
-            typeof(Distribution.BaseItem).GetField("noAttributeValue", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(item, noAttributeValue);
-            typeof(Distribution.BaseItem).GetField("multipliers", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(item, multipliers);
-            items.Add(item);
-        }
-
-        public static void RegisterDistribution(Distribution distribution)
-        {
-            Distribution.CheckItems();
-            Dictionary<uint, Distribution> items = (Dictionary<uint, Distribution>)typeof(HashedGeneralValue<Distribution>).GetField("items", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
-            items.Add(distribution.Hash, distribution);
         }
 
         public override void OnLateInitializeMelon()
@@ -67,7 +51,7 @@ namespace DifferentWyrmMaterials
             wyrmMaterialDistribution = GameObject.Instantiate(Distribution.All.Where(dist => dist.Hash == 49220u).First());
             typeof(HashedGeneralValue<Distribution>).GetField("hash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(wyrmMaterialDistribution, 49221);
             wyrmMaterialDistribution.name = "Wyrm Material Distribution";
-            RegisterDistribution(wyrmMaterialDistribution);
+            CustomDistributionAPI.Core.RegisterDistribution(wyrmMaterialDistribution);
             Distribution.Item item_wyrmFaceLeather = new Distribution.Item();
             typeof(Distribution.BaseItem).GetField("topic", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(item_wyrmFaceLeather, PhysicalMaterial.All.Where(mat => mat.Hash == 63538u).First());
             typeof(Distribution.BaseItem).GetField("baseValue", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(item_wyrmFaceLeather, 1f);
@@ -77,7 +61,7 @@ namespace DifferentWyrmMaterials
             crystalWyrmMaterialDistribution = GameObject.Instantiate(wyrmMaterialDistribution);
             typeof(HashedGeneralValue<Distribution>).GetField("hash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(crystalWyrmMaterialDistribution, 49222);
             crystalWyrmMaterialDistribution.name = "Crystal Wyrm Material Distribution";
-            RegisterDistribution(crystalWyrmMaterialDistribution);
+            CustomDistributionAPI.Core.RegisterDistribution(crystalWyrmMaterialDistribution);
             HarmonyInstance.Patch(AccessTools.Method(typeof(NetworkPrefab), "Initialize"), postfix: new HarmonyMethod(typeof(InitializePatch), nameof(InitializePatch.Postfix)));
         }
     }
