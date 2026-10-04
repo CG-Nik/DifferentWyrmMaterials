@@ -14,28 +14,6 @@ using CustomDistributionAPI;
 
 namespace DifferentWyrmMaterials
 {
-    public class InitializePatch
-    {
-        internal static void Postfix(NetworkPrefab __instance)
-        {
-            switch (__instance.Hash)
-            {
-                case 21642u: // This is the non-trial Wyrm
-                case 6004u: // This is the trial Wyrm
-                    PhysicalMaterialPart physicalMaterialPart_Wyrm = __instance.gameObject.GetComponent<PhysicalMaterialPart>();
-                    typeof(PhysicalMaterialPart).GetField("materialDistribution", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(physicalMaterialPart_Wyrm, Core.wyrmMaterialDistribution);
-                    break;
-                case 37392u: // This is the non-trial Crystal Wyrm
-                case 48128u: // This is the trial Crystal Wyrm
-                    PhysicalMaterialPart physicalMaterialPart_CrystalWyrm = __instance.gameObject.GetComponent<PhysicalMaterialPart>();
-                    typeof(PhysicalMaterialPart).GetField("materialDistribution", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(physicalMaterialPart_CrystalWyrm, Core.crystalWyrmMaterialDistribution);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
     public class Core : MelonMod
     {
         public static Distribution wyrmMaterialDistribution;
@@ -62,7 +40,18 @@ namespace DifferentWyrmMaterials
             typeof(HashedGeneralValue<Distribution>).GetField("hash", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(crystalWyrmMaterialDistribution, 49222);
             crystalWyrmMaterialDistribution.name = "Crystal Wyrm Material Distribution";
             CustomDistributionAPI.Core.RegisterDistribution(crystalWyrmMaterialDistribution);
-            HarmonyInstance.Patch(AccessTools.Method(typeof(NetworkPrefab), "Initialize"), postfix: new HarmonyMethod(typeof(InitializePatch), nameof(InitializePatch.Postfix)));
+            GameObject wyrm = (GameObject)Resources.Load("network prefabs/creatures/monsters/wyrms/Wyrm");
+            PhysicalMaterialPart physicalMaterialPart_wyrm = wyrm.GetComponent<PhysicalMaterialPart>();
+            typeof(PhysicalMaterialPart).GetField("materialDistribution", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(physicalMaterialPart_wyrm, Core.wyrmMaterialDistribution);
+            GameObject crystalWyrm = (GameObject)Resources.Load("network prefabs/creatures/monsters/wyrms/Crystal Wyrm");
+            PhysicalMaterialPart physicalMaterialPart_crystalWyrm = crystalWyrm.GetComponent<PhysicalMaterialPart>();
+            typeof(PhysicalMaterialPart).GetField("materialDistribution", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(physicalMaterialPart_crystalWyrm, Core.crystalWyrmMaterialDistribution);
+            GameObject wyrmTrial = (GameObject)Resources.Load("network prefabs/creatures/monsters/trial monster spawners/Wyrm (Trial)");
+            PhysicalMaterialPart physicalMaterialPart_wyrmTrial = wyrmTrial.GetComponent<PhysicalMaterialPart>();
+            typeof(PhysicalMaterialPart).GetField("materialDistribution", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(physicalMaterialPart_wyrmTrial, Core.wyrmMaterialDistribution);
+            GameObject crystalWyrmTrial = (GameObject)Resources.Load("network prefabs/creatures/monsters/trial monster spawners/Crystal Wyrm (Trial)");
+            PhysicalMaterialPart physicalMaterialPart_crystalWyrmTrial = crystalWyrmTrial.GetComponent<PhysicalMaterialPart>();
+            typeof(PhysicalMaterialPart).GetField("materialDistribution", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(physicalMaterialPart_crystalWyrmTrial, Core.crystalWyrmMaterialDistribution);
         }
     }
 }
